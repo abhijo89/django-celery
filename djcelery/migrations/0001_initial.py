@@ -59,8 +59,8 @@ class Migration(migrations.Migration):
                 ('total_run_count', models.PositiveIntegerField(default=0, editable=False)),
                 ('date_changed', models.DateTimeField(auto_now=True)),
                 ('description', models.TextField(verbose_name='description', blank=True)),
-                ('crontab', models.ForeignKey(blank=True, to='djcelery.CrontabSchedule', help_text='Use one of interval/crontab', null=True, verbose_name='crontab')),
-                ('interval', models.ForeignKey(verbose_name='interval', blank=True, to='djcelery.IntervalSchedule', null=True)),
+                ('crontab', models.ForeignKey(blank=True, to='djcelery.CrontabSchedule', help_text='Use one of interval/crontab', null=True, verbose_name='crontab', on_delete=models.CASCADE)),
+                ('interval', models.ForeignKey(verbose_name='interval', blank=True, to='djcelery.IntervalSchedule', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'periodic task',
@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('task_id', models.CharField(unique=True, max_length=255, verbose_name='task id')),
-                ('status', models.CharField(default=b'PENDING', max_length=50, verbose_name='state', choices=[(b'FAILURE', b'FAILURE'), (b'PENDING', b'PENDING'), (b'RECEIVED', b'RECEIVED'), (b'RETRY', b'RETRY'), (b'REVOKED', b'REVOKED'), (b'STARTED', b'STARTED'), (b'SUCCESS', b'SUCCESS')])),
+                ('status', models.CharField(default='PENDING', max_length=50, verbose_name='state', choices=[('FAILURE', 'FAILURE'), ('PENDING', 'PENDING'), ('RECEIVED', 'RECEIVED'), ('RETRY', 'RETRY'), ('REVOKED', 'REVOKED'), ('STARTED', 'STARTED'), ('SUCCESS', 'SUCCESS')])),
                 ('result', djcelery.picklefield.PickledObjectField(default=None, null=True, editable=False)),
                 ('date_done', models.DateTimeField(auto_now=True, verbose_name='done at')),
                 ('traceback', models.TextField(null=True, verbose_name='traceback', blank=True)),
@@ -117,7 +117,7 @@ class Migration(migrations.Migration):
             name='TaskState',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('state', models.CharField(db_index=True, max_length=64, verbose_name='state', choices=[(b'FAILURE', b'FAILURE'), (b'PENDING', b'PENDING'), (b'RECEIVED', b'RECEIVED'), (b'RETRY', b'RETRY'), (b'REVOKED', b'REVOKED'), (b'STARTED', b'STARTED'), (b'SUCCESS', b'SUCCESS')])),
+                ('state', models.CharField(db_index=True, max_length=64, verbose_name='state', choices=[('FAILURE', 'FAILURE'), ('PENDING', 'PENDING'), ('RECEIVED', 'RECEIVED'), ('RETRY', 'RETRY'), ('REVOKED', 'REVOKED'), ('STARTED', 'STARTED'), ('SUCCESS', 'SUCCESS')])),
                 ('task_id', models.CharField(unique=True, max_length=36, verbose_name='UUID')),
                 ('name', models.CharField(max_length=200, null=True, verbose_name='name', db_index=True)),
                 ('tstamp', models.DateTimeField(verbose_name='event received at', db_index=True)),
@@ -157,7 +157,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='taskstate',
             name='worker',
-            field=models.ForeignKey(verbose_name='worker', to='djcelery.WorkerState', null=True),
+            field=models.ForeignKey(verbose_name='worker', to='djcelery.WorkerState', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]
